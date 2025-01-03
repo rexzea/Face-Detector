@@ -4,7 +4,7 @@ import numpy as np
 import math
 from datetime import datetime
 
-class EnhancedFaceDetector:
+class RexzeaCasualFaceDetector:
     def __init__(self):
         self.mp_face_mesh = mp.solutions.face_mesh
         self.mp_drawing = mp.solutions.drawing_utils
@@ -196,5 +196,5 @@ class EnhancedFaceDetector:
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    detector = EnhancedFaceDetector()
+    detector = RexzeaCasualFaceDetector()
     detector.start_webcam()
