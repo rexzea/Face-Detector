@@ -124,4 +124,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Project Link: [Face Detector](https://github.com/rexzea/Face-Detector.git)
 
 ---
-⭐️ If you like this project, give it a star!
++62 898-8610-455
+
+<div align="center">
+
+
+![Logo Python](https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg)
+```
+🌟 Made with ❤️ by Rexzea 🌟
+```
+
+</div>
+
+---
+
+<div align="center">
+⭐ Dont forget to give a star if the project is good!⭐
+</div>
