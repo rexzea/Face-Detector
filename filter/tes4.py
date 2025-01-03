@@ -4,7 +4,7 @@ import numpy as np
 import math
 from datetime import datetime
 
-class hai:
+class RexzeaFilterFaceDetector:
     def __init__(self):
         self.mp_face_mesh = mp.solutions.face_mesh
         self.mp_drawing = mp.solutions.drawing_utils
@@ -319,7 +319,7 @@ class hai:
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    detector = hai()
+    detector = RexzeaFilterFaceDetector()
     detector.start_webcam()
 
 
