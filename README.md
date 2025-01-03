@@ -98,7 +98,7 @@ Having issues? Here are some common solutions:
 Got ideas for making this more? Contributions are welcome!
 
 1. 🍴 Fork the repository
-2. 🌱 Create your feature branch (`git checkout -b feature/AmazingFeature`)
+2. 🌱 Create your feature branch (`git checkout -b feature/NewFeature`)
 3. 💫 Add your changes (`git add .`)
 4. 📝 Commit your changes (`git commit -m 'Add some NewFeature'`)
 5. 🚀 Push to the branch (`git push origin feature/NewFeature`)
