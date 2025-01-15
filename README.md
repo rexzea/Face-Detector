@@ -50,7 +50,7 @@ pip install -r requirements.txt
 - `s` - Show Metrics
 - `p` - Screenshot
 
-## 🎮 Controls Casual Face Detector
+## 🎮 Controls Filter Face Detector
 - `q` - Break
 - `n` - Change Mask
 - `s` - Screenshot
