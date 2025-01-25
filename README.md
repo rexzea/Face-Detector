@@ -117,7 +117,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-[Rexzea] - [Instagram](https://www.instagram.com/alzennora/profilecard/?igsh=Ym8wZHFjcWRxaWhx) - futzfarry@gmail.com
+Rexzea - [Instagram](https://www.instagram.com/alzennora/profilecard/?igsh=Ym8wZHFjcWRxaWhx) - futzfarry@gmail.com
 
 
 
