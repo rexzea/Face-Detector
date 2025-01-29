@@ -115,29 +115,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - All our amazing contributors
 
 
-## 📧 Contact
 
-Rexzea - [Instagram](https://www.instagram.com/alzennora/profilecard/?igsh=Ym8wZHFjcWRxaWhx) - futzfarry@gmail.com
-
-
-
-Project Link: [Face Detector](https://github.com/rexzea/Face-Detector.git)
-
----
-+62 898-8610-455
+## 📞 Support & Contact
+Need assistance? Reach out through:
+- 📧 Email: [futzfary@gmail.com](mailto:futzfary@gmail.com)
+- 📱 Phone: +62 898-8610-455
+- 💬 GitHub Issues: Open a new issue in the repository
 
 <div align="center">
-
 
 ![Logo Python](https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg)
-```
-🌟 Made with ❤️ by Rexzea 🌟
-```
 
+```
+🌟 Crafted with ❤️ by Rexzea 🌟
+```
 </div>
 
 ---
 
 <div align="center">
-⭐ Dont forget to give a star if the project is good!⭐
-</div>
+
+### Show Your Support
+⭐ Star this repository if you find it helpful! ⭐
+
+[Report Bug](https://github.com/rexzea/Net-Phantom/issues) · [Request Feature](https://github.com/rexzea/Net-Phantom/issues)
