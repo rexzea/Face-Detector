@@ -138,4 +138,4 @@ Need assistance? Reach out through:
 ### Show Your Support
 ⭐ Star this repository if you find it helpful! ⭐
 
-[Report Bug](https://github.com/rexzea/Net-Phantom/issues) · [Request Feature](https://github.com/rexzea/Net-Phantom/issues)
+[Report Bug](https://github.com/rexzea/Face-Detector/issues) · [Request Feature](https://github.com/rexzea/Face-Detector/issues)
