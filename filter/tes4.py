@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import math
 from datetime import datetime
+import time
 
 class RexzeaFilterFaceDetector:
     def __init__(self):
@@ -25,7 +26,7 @@ class RexzeaFilterFaceDetector:
         self.NOSE = [168, 6, 197, 195, 5, 4, 1, 19, 94, 2]
 
         self.current_mask = 'venetian' 
-        self.masks = ['venetian', 'demon', 'cyber', 'dragon']
+        self.masks = ['venetian', 'demon', 'cyber', 'dragon', '']
         
         self.mask_colors = {
             'gold': (0, 215, 255),
@@ -37,13 +38,12 @@ class RexzeaFilterFaceDetector:
             'black': (0, 0, 0),
             'white': (255, 255, 255),
             'orange': (0, 165, 255), 
-            'yellow': (0, 255, 255) 
+            'yellow': (0, 255, 255),
+            'dragon_red': (139, 0, 0),
+            'dragon_bright': (178, 34, 34)
         }
 
-
-
-
-    # Venetian Mask
+# Venetian Mask
     def create_venetian_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
@@ -87,9 +87,6 @@ class RexzeaFilterFaceDetector:
         alpha = 0.7
         frame_with_mask = cv2.addWeighted(frame, 1, mask_layer, alpha, 0)
         return frame_with_mask
-
-
-
 
 
     # Demon Mask
@@ -200,78 +197,106 @@ class RexzeaFilterFaceDetector:
         
         return frame_with_mask
     
-
-
-
-
     # Dragon Mask
     def create_dragon_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
-
-        face_points = []
-        for idx in self.FACE_OUTLINE:
-            point = landmarks.landmark[idx]
-            x = int(point.x * w)
-            y = int(point.y * h)
-            face_points.append([x, y])
-
-        face_points = np.array(face_points, np.int32)
-        cv2.fillPoly(mask_layer, [face_points], (0, 100, 0))  
-
-        top_head = landmarks.landmark[10]
-        head_x = int(top_head.x * w)
-        head_y = int(top_head.y * h)
-
-        horn_left = np.array([
-            [head_x - 50, head_y],
-            [head_x - 30, head_y - 80],
-            [head_x - 10, head_y - 40]
-        ], np.int32)
-        cv2.fillPoly(mask_layer, [horn_left], (0, 128, 0)) 
-
-        horn_right = np.array([
-            [head_x + 50, head_y],
-            [head_x + 30, head_y - 80],
-            [head_x + 10, head_y - 40]
-        ], np.int32)
-        cv2.fillPoly(mask_layer, [horn_right], (0, 128, 0))
-
-        for i in range(0, len(face_points), 5):  
-            x, y = face_points[i]
-            cv2.circle(mask_layer, (x, y), 10, (0, 255, 0), -1)  
-
-        for i in range(0, len(face_points), 5):
-            x, y = face_points[i]
-            cv2.circle(mask_layer, (x, y), 15, (0, 200, 0), 2) 
-
-        for eye_idx in [self.LEFT_EYE, self.RIGHT_EYE]:
-            eye_points = []
-            for idx in eye_idx:
-                point = landmarks.landmark[idx]
+        fire_layer = np.zeros_like(frame)
+        
+        # Membuat tekstur sisik naga
+        scale_pattern = np.zeros((h, w, 3), dtype=np.uint8)
+        for y in range(0, h, 15):
+            for x in range(0, w, 15):
+                cv2.circle(scale_pattern, (x, y), 7, self.mask_colors['dragon_red'], -1)
+                cv2.circle(scale_pattern, (x, y), 5, self.mask_colors['dragon_bright'], -1)
+        
+        # Membuat bentuk wajah naga menggunakan landmarks
+        face_contour = []
+        for connection in self.mp_face_mesh.FACEMESH_CONTOURS:
+            for point_idx in connection:
+                point = landmarks.landmark[point_idx]
                 x = int(point.x * w)
                 y = int(point.y * h)
+                face_contour.append([x, y])
+        
+        face_contour = np.array(face_contour, np.int32)
+        
+        # Membuat topeng dasar
+        cv2.fillPoly(mask_layer, [face_contour], self.mask_colors['dragon_bright'])
+        
+        # Menambahkan tekstur sisik ke area wajah
+        mask_area = cv2.fillPoly(np.zeros((h, w), dtype=np.uint8), [face_contour], 255)
+        scale_pattern_masked = cv2.bitwise_and(scale_pattern, scale_pattern, mask=mask_area)
+        mask_layer = cv2.addWeighted(mask_layer, 0.7, scale_pattern_masked, 0.3, 0)
+        
+        # Menambahkan efek api di sekitar wajah
+        for i in range(len(face_contour)):
+            x, y = face_contour[i][0], face_contour[i][1]
+            for j in range(20):
+                offset_y = int(10 * np.sin(time.time() * 5 + i * 0.1))
+                color_intensity = 255 - j * 10
+                cv2.circle(fire_layer, 
+                          (x, y - j * 2 + offset_y), 
+                          2, 
+                          (0, color_intensity, 255), 
+                          -1)
+        
+        # Menambahkan mata naga yang menyala
+        eye_centers = []
+        for eye_indices in [self.LEFT_EYE, self.RIGHT_EYE]:
+            eye_points = []
+            for idx in eye_indices:
+                point = landmarks.landmark[idx]
+                x, y = int(point.x * w), int(point.y * h)
                 eye_points.append([x, y])
             eye_points = np.array(eye_points, np.int32)
-            cv2.fillPoly(mask_layer, [eye_points], (255, 0, 0))
-
-            eye_center = np.mean(eye_points, axis=0).astype(int)
-            for radius in range(5, 20, 5):
-                cv2.circle(mask_layer, tuple(eye_center), radius, (255, 0, 0), 2)
-
-        for i in range(10):
-            angle = np.random.randint(0, 360)
-            radius = np.random.randint(50, 100)
-            x = int(head_x + radius * math.cos(math.radians(angle)))
-            y = int(head_y + radius * math.sin(math.radians(angle)))
-            cv2.circle(mask_layer, (x, y), 10, (0, 255, 255), -1)  
-
-        for i in range(5):
-            cv2.circle(mask_layer, (head_x, head_y), 50 + i * 10, (0, 255, 0), 1)  
-        alpha = 0.8
-        frame_with_mask = cv2.addWeighted(frame, 1, mask_layer, alpha, 0)
+            
+            # Menghitung pusat mata
+            M = cv2.moments(eye_points)
+            if M['m00'] != 0:
+                cx = int(M['m10'] / M['m00'])
+                cy = int(M['m01'] / M['m00'])
+                eye_centers.append((cx, cy))
+                
+                # Membuat efek mata menyala
+                for radius in range(15, 0, -1):
+                    intensity = int(255 * (radius / 15))
+                    cv2.circle(mask_layer, (cx, cy), radius, (0, intensity, intensity), -1)
+        
+        # Menambahkan detail tanduk
+        for eye_center in eye_centers:
+            horn_top = (eye_center[0], eye_center[1] - 50)
+            horn_points = np.array([
+                eye_center,
+                (eye_center[0] - 20, eye_center[1] - 20),
+                horn_top,
+                (eye_center[0] + 20, eye_center[1] - 20)
+            ], np.int32)
+            cv2.fillPoly(mask_layer, [horn_points], self.mask_colors['dragon_red'])
+            cv2.line(mask_layer, eye_center, horn_top, self.mask_colors['dragon_bright'], 2)
+        
+        # Menambahkan efek glow
+        glow = cv2.GaussianBlur(mask_layer, (21, 21), 0)
+        fire_glow = cv2.GaussianBlur(fire_layer, (15, 15), 0)
+        
+        # Menggabungkan semua layer
+        frame_with_mask = cv2.addWeighted(frame, 0.6, mask_layer, 0.4, 0)
+        frame_with_mask = cv2.addWeighted(frame_with_mask, 0.8, glow, 0.2, 0)
+        frame_with_mask = cv2.addWeighted(frame_with_mask, 0.8, fire_layer, 0.6, 0)
+        frame_with_mask = cv2.addWeighted(frame_with_mask, 0.8, fire_glow, 0.2, 0)
+        
+        # Menambahkan teks dengan efek api
+        text = "DRAGON"
+        text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)[0]
+        text_x = int(w/2 - text_size[0]/2)
+        text_y = int(landmarks.landmark[10].y * h) - 50
+        
+        cv2.putText(frame_with_mask, text, (text_x, text_y),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 4)
+        cv2.putText(frame_with_mask, text, (text_x, text_y),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 165, 255), 2)
+        
         return frame_with_mask
-    
 
     def process_frame(self, frame):
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -321,6 +346,3 @@ class RexzeaFilterFaceDetector:
 if __name__ == "__main__":
     detector = RexzeaFilterFaceDetector()
     detector.start_webcam()
-
-
-
