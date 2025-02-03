@@ -26,7 +26,7 @@ class RexzeaFilterFaceDetector:
         self.NOSE = [168, 6, 197, 195, 5, 4, 1, 19, 94, 2]
 
         self.current_mask = 'venetian' 
-        self.masks = ['venetian', 'demon', 'cyber', 'dragon', '']
+        self.masks = ['venetian', 'demon', 'cyber', 'angel', 'dragon']
         
         self.mask_colors = {
             'gold': (0, 215, 255),
@@ -43,8 +43,11 @@ class RexzeaFilterFaceDetector:
             'dragon_bright': (178, 34, 34)
         }
 
+
+
+
 # Venetian Mask
-    def create_venetian_mask(self, frame, landmarks):
+    def venetian_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
     
@@ -89,8 +92,11 @@ class RexzeaFilterFaceDetector:
         return frame_with_mask
 
 
+
+
+
     # Demon Mask
-    def create_demon_mask(self, frame, landmarks):
+    def demon_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
         
@@ -151,7 +157,7 @@ class RexzeaFilterFaceDetector:
 
 
     # Cyber Mask
-    def create_cyber_mask(self, frame, landmarks):
+    def cyber_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
         
@@ -196,11 +202,85 @@ class RexzeaFilterFaceDetector:
         frame_with_mask = cv2.addWeighted(frame_with_mask, 1, bloom, 0.3, 0)
         
         return frame_with_mask
+    
+
+
+
+
+
+    def angle_mask(self, frame, landmarks):
+        h, w = frame.shape[:2]
+        mask_layer = np.zeros_like(frame)
+
+        face_points = []
+        for idx in self.FACE_OUTLINE:
+            point = landmarks.landmark[idx]
+            x = int(point.x * w)
+            y = int(point.y * h)
+            face_points.append([x, y])
+
+        face_points = np.array(face_points, np.int32)
+        cv2.fillPoly(mask_layer, [face_points], (240, 248, 255))
+
+        top_head = landmarks.landmark[10]
+        head_x = int(top_head.x * w)
+        head_y = int(top_head.y * h)
+
+
+        wing_left = np.array([
+            [head_x-150, head_y-50],
+            [head_x-300, head_y-200],
+            [head_x-100, head_y-100],
+            [head_x-50, head_y],
+        ], np.int32)
+        cv2.fillPoly(mask_layer, [wing_left], (255, 255, 255))
+
+        
+        wing_right = np.array([
+            [head_x+150, head_y-50],
+            [head_x+300, head_y-200],
+            [head_x+100, head_y-100],
+            [head_x+50, head_y]
+        ], np.int32)
+        cv2.fillPoly(mask_layer, [wing_right], (255, 255, 255))
+
+
+
+        # halo
+        halo_center = (head_x, head_y - 100)
+        cv2.circle(mask_layer, halo_center, 50, (255, 255, 200), -1)
+        cv2.circle(mask_layer, halo_center, 55, (200, 200, 255), 2)
+
+        for eye_idx in [self.LEFT_EYE, self.RIGHT_EYE]:
+            eye_points = []
+            for idx in eye_idx:
+                point = landmarks.landmark[idx]
+                x = int(point.x * w)
+                y = int(point.y * h)
+                eye_points.append([x, y])
+            eye_points = np.array(eye_points, np.int32)
+        
+            eye_center = np.mean(eye_points, axis=0).astype(int)
+            for radius in range(5, 20, 5):
+                cv2.circle(mask_layer, tuple(eye_center), radius, (255, 255, 200), 2)
+    
+        glow = cv2.GaussianBlur(mask_layer, (21, 21), 0)
+    
+        frame_with_mask = cv2.addWeighted(frame, 0.7, mask_layer, 0.3, 0)
+        frame_with_mask = cv2.addWeighted(frame_with_mask, 0.9, glow, 0.1, 0)
+    
+        cv2.putText(frame_with_mask, "ANGEL", 
+                    (int(w/2)-50, head_y-200), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 200), 2)
+    
+        return frame_with_mask
 
 
     
-    # Dragon Mask (create by R1n352)
-    def create_dragon_mask(self, frame, landmarks):
+
+
+    # Dragon Mask
+    def dragon_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
         fire_layer = np.zeros_like(frame)
@@ -256,6 +336,7 @@ class RexzeaFilterFaceDetector:
                 for radius in range(15, 0, -1):
                     intensity = int(255 * (radius / 15))
                     cv2.circle(mask_layer, (cx, cy), radius, (0, intensity, intensity), -1)
+
         
         for eye_center in eye_centers:
             horn_top = (eye_center[0], eye_center[1] - 50)
@@ -295,13 +376,15 @@ class RexzeaFilterFaceDetector:
         if results.multi_face_landmarks:
             for face_landmarks in results.multi_face_landmarks:
                 if self.current_mask == 'venetian':
-                    frame = self.create_venetian_mask(frame, face_landmarks)
+                    frame = self.venetian_mask(frame, face_landmarks)
                 elif self.current_mask == 'demon':
-                    frame = self.create_demon_mask(frame, face_landmarks)
+                    frame = self.demon_mask(frame, face_landmarks)
                 elif self.current_mask == 'cyber':
-                    frame = self.create_cyber_mask(frame, face_landmarks)
+                    frame = self.cyber_mask(frame, face_landmarks)
+                elif self.current_mask == 'angel':
+                    frame = self.angle_mask(frame, face_landmarks)
                 elif self.current_mask == 'dragon':
-                    frame = self.create_dragon_mask(frame, face_landmarks)
+                    frame = self.dragon_mask(frame, face_landmarks)
         
         cv2.putText(frame, f"Mask: {self.current_mask} (Press 'n' to change)", 
                    (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
