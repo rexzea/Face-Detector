@@ -196,21 +196,21 @@ class RexzeaFilterFaceDetector:
         frame_with_mask = cv2.addWeighted(frame_with_mask, 1, bloom, 0.3, 0)
         
         return frame_with_mask
+
+
     
-    # Dragon Mask
+    # Dragon Mask (create by R1n352)
     def create_dragon_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
         mask_layer = np.zeros_like(frame)
         fire_layer = np.zeros_like(frame)
         
-        # Membuat tekstur sisik naga
         scale_pattern = np.zeros((h, w, 3), dtype=np.uint8)
         for y in range(0, h, 15):
             for x in range(0, w, 15):
                 cv2.circle(scale_pattern, (x, y), 7, self.mask_colors['dragon_red'], -1)
                 cv2.circle(scale_pattern, (x, y), 5, self.mask_colors['dragon_bright'], -1)
         
-        # Membuat bentuk wajah naga menggunakan landmarks
         face_contour = []
         for connection in self.mp_face_mesh.FACEMESH_CONTOURS:
             for point_idx in connection:
@@ -221,15 +221,12 @@ class RexzeaFilterFaceDetector:
         
         face_contour = np.array(face_contour, np.int32)
         
-        # Membuat topeng dasar
         cv2.fillPoly(mask_layer, [face_contour], self.mask_colors['dragon_bright'])
         
-        # Menambahkan tekstur sisik ke area wajah
         mask_area = cv2.fillPoly(np.zeros((h, w), dtype=np.uint8), [face_contour], 255)
         scale_pattern_masked = cv2.bitwise_and(scale_pattern, scale_pattern, mask=mask_area)
         mask_layer = cv2.addWeighted(mask_layer, 0.7, scale_pattern_masked, 0.3, 0)
         
-        # Menambahkan efek api di sekitar wajah
         for i in range(len(face_contour)):
             x, y = face_contour[i][0], face_contour[i][1]
             for j in range(20):
@@ -241,7 +238,6 @@ class RexzeaFilterFaceDetector:
                           (0, color_intensity, 255), 
                           -1)
         
-        # Menambahkan mata naga yang menyala
         eye_centers = []
         for eye_indices in [self.LEFT_EYE, self.RIGHT_EYE]:
             eye_points = []
@@ -251,19 +247,16 @@ class RexzeaFilterFaceDetector:
                 eye_points.append([x, y])
             eye_points = np.array(eye_points, np.int32)
             
-            # Menghitung pusat mata
             M = cv2.moments(eye_points)
             if M['m00'] != 0:
                 cx = int(M['m10'] / M['m00'])
                 cy = int(M['m01'] / M['m00'])
                 eye_centers.append((cx, cy))
                 
-                # Membuat efek mata menyala
                 for radius in range(15, 0, -1):
                     intensity = int(255 * (radius / 15))
                     cv2.circle(mask_layer, (cx, cy), radius, (0, intensity, intensity), -1)
         
-        # Menambahkan detail tanduk
         for eye_center in eye_centers:
             horn_top = (eye_center[0], eye_center[1] - 50)
             horn_points = np.array([
@@ -275,17 +268,14 @@ class RexzeaFilterFaceDetector:
             cv2.fillPoly(mask_layer, [horn_points], self.mask_colors['dragon_red'])
             cv2.line(mask_layer, eye_center, horn_top, self.mask_colors['dragon_bright'], 2)
         
-        # Menambahkan efek glow
         glow = cv2.GaussianBlur(mask_layer, (21, 21), 0)
         fire_glow = cv2.GaussianBlur(fire_layer, (15, 15), 0)
         
-        # Menggabungkan semua layer
         frame_with_mask = cv2.addWeighted(frame, 0.6, mask_layer, 0.4, 0)
         frame_with_mask = cv2.addWeighted(frame_with_mask, 0.8, glow, 0.2, 0)
         frame_with_mask = cv2.addWeighted(frame_with_mask, 0.8, fire_layer, 0.6, 0)
         frame_with_mask = cv2.addWeighted(frame_with_mask, 0.8, fire_glow, 0.2, 0)
         
-        # Menambahkan teks dengan efek api
         text = "DRAGON"
         text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)[0]
         text_x = int(w/2 - text_size[0]/2)
