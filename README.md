@@ -25,6 +25,9 @@ All filters work in real time and adapt to your facial movements!
 # Clone the repository
 git clone https://github.com/rexzea/Face-Detector.git
 
+# Navigate Folder
+cd Face-Detector
+
 # Install dependencies
 conda install -c conda-forge opencv
 conda install mediapipe
