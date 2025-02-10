@@ -90,8 +90,7 @@ class RexzeaFilterFaceDetector:
         alpha = 0.7
         frame_with_mask = cv2.addWeighted(frame, 1, mask_layer, alpha, 0)
         return frame_with_mask
-
-
+    
 
 
 
@@ -155,7 +154,7 @@ class RexzeaFilterFaceDetector:
     
 
 
-
+    
     # Cyber Mask
     def cyber_mask(self, frame, landmarks):
         h, w = frame.shape[:2]
