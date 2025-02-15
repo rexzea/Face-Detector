@@ -8,7 +8,7 @@ from pathlib import Path # next updt
 from typing import Tuple, List, Optional # next updt
 
 class RexzeaFaceDetector:
-    def __init__(self, confidence_threshold: float = 0.5):
+    def __init__(self, confidence_threshold: float = 0.5): 
 
 
 
