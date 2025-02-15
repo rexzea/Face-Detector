@@ -100,7 +100,7 @@ class RexzeaFaceDetector:
         Args:
             image_path (str): Path to the image file
             
-        Returns:
+        Returns: 
             np.ndarray: Loaded image in BGR format
             
         Raises:
