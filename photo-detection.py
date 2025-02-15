@@ -5,7 +5,7 @@ import sys
 import logging
 from datetime import datetime
 from pathlib import Path # next updt
-from typing import Tuple, List, Optional # next updt (deff function)
+from typing import Tuple, List, Optional # next updt (deff function) model data
 
 class RexzeaFaceDetector:
     def __init__(self, confidence_threshold: float = 0.5): 
