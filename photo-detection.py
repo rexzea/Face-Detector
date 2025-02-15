@@ -274,7 +274,7 @@ def main():
     
     args = parser.parse_args()
 
-    try:
+    try: # dryload from MOG.... why not lambda? because this data is not avaible with raw data class
         # init detector
         detector = RexzeaFaceDetector(confidence_threshold=args.confidence)
         # process image
