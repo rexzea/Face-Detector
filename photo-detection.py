@@ -68,7 +68,7 @@ class RexzeaFaceDetector:
         
 
 
-
+ 
 
 
     def _init_dnn_detector(self):
