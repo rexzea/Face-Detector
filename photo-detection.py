@@ -14,7 +14,7 @@ class RexzeaFaceDetector:
 
         """
         initialize the face detector with various detection models.
-        
+         
         Args:
             confidence_threshold (float): Detection confidence threshold (0-1)
         """
