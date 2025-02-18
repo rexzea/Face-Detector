@@ -1,4 +1,11 @@
+
+
+
+
 # 🎭 Face Detector
+![Python Version](https://img.shields.io/badge/python-3.6+-blue.svg)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 Transform your face into something extraordinary! A real time face detection app with unique and fun AR mask filters powered by OpenCV and MediaPipe.
 
@@ -17,6 +24,95 @@ Ever wanted to become a dragon? Or maybe try on a Cyber? Our Face Detector doesn
 
 
 All filters work in real time and adapt to your facial movements!
+
+
+## ✨ Features
+
+- 🔍 Multiple detection methods:
+  - Haar Cascade Classifier
+  - Deep Neural Network (DNN) detector
+- 📊 Configurable confidence threshold
+- 🎯 Optional facial landmarks visualization
+- 📝 Comprehensive logging system
+- ⏱️ Timestamp-based file saving
+- 🛠️ Command-line interface for easy usage
+
+
+A robust and flexible face detection system built with Python and OpenCV, supporting multiple detection methods and visualization options.
+
+
+
+3. (Optional) For DNN detection method:
+   - Create directory: `models/face_detector/`
+   - Download required model files:
+     - `res10_300x300_ssd_iter_140000.caffemodel`
+     - `deploy.prototxt`
+   - Place them in the `models/face_detector/` directory
+
+## 📂 Project Structure
+```
+face_detection/
+├── face_detection.py         # Main script
+├── models/                   # Model directory
+│   └── face_detector/       # DNN model files
+├── results/                 # Output directory
+└── README.md
+```
+
+### Advanced Options
+```bash
+# Using DNN method with confidence threshold
+python face_detection.py path/to/image.jpg --method dnn --confidence 0.6
+
+# Save output to specific location with landmarks
+python face_detection.py path/to/image.jpg --output results/detected.jpg --landmarks
+
+# Full example with all options
+python face_detection.py path/to/image.jpg \
+    --output results/detected.jpg \
+    --method dnn \
+    --confidence 0.6 \
+    --landmarks
+```
+
+### Command Line Arguments
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `image_path` | Path to input image | Required |
+| `--output` | Output image path | `detected_faces.jpg` |
+| `--method` | Detection method (`haar` or `dnn`) | `haar` |
+| `--confidence` | Detection confidence threshold | `0.5` |
+| `--landmarks` | Draw facial landmarks | `False` |
+
+## 📋 Requirements
+
+- Python 3.6+
+- OpenCV 4.x
+- NumPy
+
+## 🎯 Features in Detail
+
+### Detection Methods
+
+1. **Haar Cascade Classifier**
+   - Fast and lightweight
+   - Good for basic face detection
+   - Works well in controlled environments
+
+2. **DNN Detector**
+   - More accurate detection
+   - Better handling of different face angles
+   - Requires additional model files
+
+### Visualization Options
+
+- Rectangle drawing around detected faces
+- Optional facial landmarks
+- Detection count display
+- Configurable output format
+
+
 
 ## 🚀 Quick Start
 
